@@ -7,7 +7,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
-import { BrowserRouter as Router, Link, Route, } from "react-router-dom";
+import { HashRouter as Router, Link, Route, } from "react-router-dom";
 
 import SignIn from './SignIn'
 import SignUp from './SignUp'

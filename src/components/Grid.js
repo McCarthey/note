@@ -11,19 +11,36 @@ export default class MyFirstGrid extends React.Component {
         ]
     }
 
-    changeStop = () => {
-        console.log(this.state.layout)
+    changeStop = (layout) => {
+        console.log(layout)
+        this.setState({ layout })
+    }
+
+    handleSave = () => {
+        localStorage.setItem('NOTE_DATA', JSON.stringify(this.state.layout))
+    }
+
+    componentDidMount() {
+        console.log(this.props)
+        if(localStorage.getItem('NOTE_DATA')) {
+            this.setState({
+                layout: JSON.parse(localStorage.getItem('NOTE_DATA'))
+            })
+        }
     }
 
     render() {
         // layout is an array of objects, see the demo for more complete usage
         const {layout} = this.state
         return (
-            <GridLayout className="layout" layout={layout} cols={12} rowHeight={30} width={1080} onDragStop={this.changeStop} onResizeStop={this.changeStop}>
-                <div key="a">a</div>
-                <div key="b">b</div>
-                <div key="c">c</div>
-            </GridLayout>
+            <div>
+                <GridLayout className="layout" layout={layout} cols={12} rowHeight={30} width={1080} onDragStop={this.changeStop} onResizeStop={this.changeStop}>
+                    <div key="a">a</div>
+                    <div key="b">b</div>
+                    <div key="c">c</div>
+                </GridLayout>
+                <button onClick={this.handleSave}>Save</button>  
+            </div>
         )
     }
 }
