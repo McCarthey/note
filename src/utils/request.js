@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-unfetch'
-
+const isDev = process.env.NODE_ENV === 'development'
 
 function checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {
@@ -38,12 +38,14 @@ const request = {
 }
 
 async function postJSON (url,body,options={},toast=true) {
+    url = isDev ? url : `http://118.24.146.34:8770${url}`
     const response = await fetch(url, {
         ...options,
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(body),
     })
 
@@ -55,7 +57,9 @@ async function postJSON (url,body,options={},toast=true) {
 }
 
 async function get(url) {
-    const response = await fetch(url)
+    url = isDev ? url : `http://118.24.146.34:8770${url}`
+
+    const response = await fetch(url, {credentials: 'include' })
 
     checkStatus(response)
 
