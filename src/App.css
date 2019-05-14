@@ -32,3 +32,17 @@
     transform: rotate(360deg);
   }
 }
+
+.link-wrapper {
+  display: flex;
+}
+
+.link-wrapper a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 5px;
+}
+
+.logout {
+  cursor: pointer;
+}

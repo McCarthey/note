@@ -4,7 +4,7 @@ import Message from './Message'
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
-import classes from './sign.css'
+import './sign.css'
 
 export default class SignUp extends React.Component {
     state = {
@@ -56,7 +56,9 @@ export default class SignUp extends React.Component {
                     type: 'success'
                 }
             },() => {
-                this.props.history.push('/signin');
+                setTimeout(()=> {
+                    this.props.history.push('/signin');
+                }, 1000)
             })
         } catch(e) {
             this.setState({
@@ -68,28 +70,13 @@ export default class SignUp extends React.Component {
             })
         }
 
-    }
-
-    async componentDidMount() {
-        try {
-            const res = await request.get('/test')
-            console.log(res)
-        } catch(e) {
-            this.setState({
-                snackbar: {
-                    open: true,
-                    message: e.msg,
-                    type: 'error'
-                }
-            })
-        }
     }
 
     render() {
         return (
             <div>
                 <Message {...this.state.snackbar} onClose={this.handleClose} />
-                <div className={classes.sign}> 
+                <div className="sign"> 
                     <TextField
                         id="username"
                         label="用户名"

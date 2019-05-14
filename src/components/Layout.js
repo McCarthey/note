@@ -1,4 +1,5 @@
 import React from 'react';
+import request from '../utils/request'
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -26,21 +27,49 @@ const styles = {
   },
 };
 
-function ButtonAppBar(props) {
-  const { classes } = props;
+class ButtonAppBar extends React.Component {
+  state = {
+    isLoggedIn: false
+  }
+
+  async componentDidMount() {
+    try {
+      await request.get('/checkLogin')
+      this.setState({ isLoggedIn: true })
+    } catch(e) {
+      this.setState({ isLoggedIn: false })
+    }
+  }
+
+  logout = async () => {
+    try {
+      await request.postJSON('/logout', {})
+      this.setState({ isLoggedIn: false })
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
+  render (){
+  const { classes } = this.props;
+  let logEle
+  if (this.state.isLoggedIn) {
+    logEle = <div className="logout" onClick={this.logout}>退出登录</div>
+  } else {
+    logEle = <div className="link-wrapper">
+      <Link to="/">Home</Link>
+      <Link to="/signin/">SignIn</Link>
+      <Link to="/signup/">SignUp</Link>
+    </div>
+  }
   return (
     <div className={classes.root}>
       <Router>
       <AppBar position="static" >
         <Toolbar>
           <Typography variant="h6" color="inherit" className={classes.grow}>
-            Note
           </Typography>
-            <div style={{display: 'flex'}}>
-            <Link to="/">Home</Link>
-            <Link to="/signin/">SignIn</Link>
-            <Link to="/signup/">SignUp</Link>
-            </div>
+          {logEle}
         </Toolbar>
       </AppBar>
         <Route path="/" exact component={MyFirstGrid} />
@@ -49,6 +78,7 @@ function ButtonAppBar(props) {
       </Router>
     </div>
   );
+  }
 }
 
 ButtonAppBar.propTypes = {
