@@ -120,4 +120,33 @@
   
   .react-grid-layout .react-grid-item {
       border: 1px solid #030303;
+      border-radius: 6px;
+  }
+
+  .white-paper .content {
+    width: 400px;
+    height: 160px;
+    background-color: #fff;
+  }
+
+  .white-paper::before,
+  .white-paper::after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 10px;
+    width: 250px;
+    height: 20px;
+    box-shadow: 0 10px 10px #666;
+    z-index: -9;
+  }
+
+  .white-paper::before {
+    left: 4px;
+    transform: rotate(-3deg)
+  }
+
+  .white-paper::after {
+    right: 4px;
+    transform: rotate(3deg)
   }

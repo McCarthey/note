@@ -1,8 +1,8 @@
 import React from 'react'
 import request from '../utils/request'
 import Message from './Message'
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField'
+import Button from '@material-ui/core/Button'
 
 export default class SignIn extends React.Component {
     state = {
@@ -12,7 +12,7 @@ export default class SignIn extends React.Component {
             open: false,
             message: '',
             type: '',
-        }
+        },
     }
 
     handleClose = () => {
@@ -20,62 +20,64 @@ export default class SignIn extends React.Component {
             snackbar: {
                 open: false,
                 message: '',
-                type: ''
-            }
+                type: '',
+            },
         })
     }
 
     handleChange = name => event => {
         this.setState({
             [name]: event.target.value,
-        });
+        })
     }
 
     handleLogin = async () => {
-        const {username, password} = this.state
-        if(!username || !password) {
+        const { username, password } = this.state
+        if (!username || !password) {
             this.setState({
                 snackbar: {
                     open: true,
                     message: '请填写用户名和密码',
-                    type: 'warning'
-                }
+                    type: 'warning',
+                },
             })
         }
         try {
             await request.postJSON('/login', {
                 username,
-                password
+                password,
             })
-            this.setState({
-                snackbar: {
-                    open: true,
-                    message: '登录成功',
-                    type: 'success'
-                }
-            },() => {
-                setTimeout(() => {
-                    this.props.history.push('/');
-                    window.location.reload() 
-                }, 1000)
-            })
-        } catch(e) {
+            this.setState(
+                {
+                    snackbar: {
+                        open: true,
+                        message: '登录成功',
+                        type: 'success',
+                    },
+                },
+                () => {
+                    setTimeout(() => {
+                        this.props.history.push('/')
+                        window.location.reload()
+                    }, 1000)
+                },
+            )
+        } catch (e) {
             this.setState({
                 snackbar: {
                     open: true,
                     message: e.msg,
-                    type: 'error'
-                }
+                    type: 'error',
+                },
             })
         }
-
     }
 
     render() {
         return (
             <div>
                 <Message {...this.state.snackbar} onClose={this.handleClose} />
-                <div className="sign"> 
+                <div className="sign">
                     <TextField
                         id="username"
                         label="用户名"
@@ -94,9 +96,16 @@ export default class SignIn extends React.Component {
                         margin="normal"
                         variant="outlined"
                     />
-                    <Button variant="contained" size="large" color="primary" onClick={this.handleLogin}>登录</Button>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        color="primary"
+                        onClick={this.handleLogin}
+                    >
+                        登录
+                    </Button>
                 </div>
-            </div> 
+            </div>
         )
     }
-} 
+}

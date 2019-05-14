@@ -11,7 +11,7 @@ function checkStatus(response) {
     throw error
 }
 
-function handleResponseData(data, toast=true) {
+function handleResponseData(data, toast = true) {
     const ret = {
         data,
         headers: {},
@@ -34,10 +34,10 @@ function handleResponseData(data, toast=true) {
  */
 const request = {
     postJSON,
-    get
+    get,
 }
 
-async function postJSON (url,body,options={},toast=true) {
+async function postJSON(url, body, options = {}, toast = true) {
     url = isDev ? url : `http://118.24.146.34:8770${url}`
     const response = await fetch(url, {
         ...options,
@@ -59,7 +59,7 @@ async function postJSON (url,body,options={},toast=true) {
 async function get(url) {
     url = isDev ? url : `http://118.24.146.34:8770${url}`
 
-    const response = await fetch(url, {credentials: 'include' })
+    const response = await fetch(url, { credentials: 'include' })
 
     checkStatus(response)
 
