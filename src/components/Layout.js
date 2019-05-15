@@ -13,6 +13,9 @@ import SignIn from './SignIn'
 import SignUp from './SignUp'
 import MyFirstGrid from './Grid'
 
+import EventBus from '../utils/evebt-bus'
+
+
 const styles = {
     root: {
         flexGrow: 1,
@@ -32,6 +35,9 @@ class ButtonAppBar extends React.Component {
     }
 
     async componentDidMount() {
+        EventBus.addListener('login', () => {
+            this.setState({ isLoggedIn: true })
+        })
         try {
             await request.get('/checkLogin')
             this.setState({ isLoggedIn: true })

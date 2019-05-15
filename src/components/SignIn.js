@@ -4,6 +4,8 @@ import Message from './Message'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 
+import EventBus from '../utils/evebt-bus'
+
 export default class SignIn extends React.Component {
     state = {
         username: '',
@@ -58,7 +60,7 @@ export default class SignIn extends React.Component {
                 () => {
                     setTimeout(() => {
                         this.props.history.push('/')
-                        window.location.reload()
+                        EventBus.emit('login')
                     }, 1000)
                 },
             )

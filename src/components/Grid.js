@@ -21,22 +21,21 @@ export default class MyFirstGrid extends React.Component {
         localStorage.setItem('NOTE_DATA', dataJSON)
         try {
             // TODO: 根据cookie-session查找请求者
-            await request.postJSON('/update', {
-            })
-            this.setState(
-                {
-                    snackbar: {
-                        open: true,
-                        message: '注册成功',
-                        type: 'success',
-                    },
-                },
-                () => {
-                    setTimeout(() => {
-                        this.props.history.push('/signin')
-                    }, 1000)
-                },
-            )
+            await request.get('/test')
+            // this.setState(
+            //     {
+            //         snackbar: {
+            //             open: true,
+            //             message: '注册成功',
+            //             type: 'success',
+            //         },
+            //     },
+            //     () => {
+            //         setTimeout(() => {
+            //             this.props.history.push('/signin')
+            //         }, 1000)
+            //     },
+            // )
         } catch (e) {
             this.setState({
                 snackbar: {
@@ -48,11 +47,23 @@ export default class MyFirstGrid extends React.Component {
         }
     }
 
-    componentDidMount() {
-        console.log(this.props)
+    async componentDidMount() {
         if (localStorage.getItem('NOTE_DATA')) {
             this.setState({
                 layout: JSON.parse(localStorage.getItem('NOTE_DATA')),
+            })
+        }
+        try {
+            const res = await request.get('/getNotes')
+            console.log(res)
+        }
+        catch(e) {
+            this.setState({
+                snackbar: {
+                    open: true,
+                    message: e.msg,
+                    type: 'error',
+                },
             })
         }
     }
