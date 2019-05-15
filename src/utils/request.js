@@ -19,10 +19,10 @@ function handleResponseData(data, toast = true) {
 
     // 如果错误码 !== 0 默认弹出 toast
     if (toast && ret.data && ret.data.code !== 0) {
-        // message.error(ret.data.msg)
         throw ret.data
     }
-    return ret.data
+
+    return ret.data.data
 }
 
 /**
@@ -53,7 +53,7 @@ async function postJSON(url, body, options = {}, toast = true) {
 
     const data = await response.json()
 
-    handleResponseData(data, toast)
+    return handleResponseData(data, toast)
 }
 
 async function get(url) {
@@ -65,7 +65,7 @@ async function get(url) {
 
     const data = await response.json()
 
-    handleResponseData(data)
+    return handleResponseData(data)
 }
 
 export default request
