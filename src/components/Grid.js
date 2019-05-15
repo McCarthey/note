@@ -7,6 +7,7 @@ import './grid.css'
 export default class MyFirstGrid extends React.Component {
     state = {
         layout: [],
+        data: [],
         snackbar: {
             open: false,
             message: '',
@@ -113,6 +114,9 @@ export default class MyFirstGrid extends React.Component {
         }
         try {
             const layout = await request.get('/getNotes')
+            if (!layout) {
+                return false // 数据为空
+            }
             this.setState({ layout: JSON.parse(layout) })
         }
         catch (e) {
