@@ -1,5 +1,4 @@
 .App {
-    text-align: center;
     overflow: hidden;
 }
 
@@ -50,9 +49,16 @@
 .input-multiline {
 }
 
+.text-multiline {
+    min-height: 40px;
+}
+.text-multiline pre {
+    margin: 0;
+}
+
 /* 骨架屏样式 */
 .skeleton {
-    padding: 64px 0;
+
 }
 
 .skeleton .skeleton-head,

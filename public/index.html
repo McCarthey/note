@@ -22,7 +22,6 @@
     <title>Note</title>
     <style >
     .skeleton {
-      padding: 64px 0;
     }
 
     .skeleton .skeleton-head,
@@ -48,7 +47,7 @@
 
     .skeleton-content {
       width: 100%;
-      max-width:480px;
+      max-width: calc(480px - 16px);
       height: 120px;
       margin: 10px auto 0;
     }
@@ -79,6 +78,7 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root">
+      <div style="height: 64px;"></div>
       <div class="skeleton">
         <div class="skeleton-content"></div>
         <div class="skeleton-content"></div>

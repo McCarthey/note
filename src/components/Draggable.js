@@ -3,13 +3,17 @@ import produce from 'immer'
 import TextField from '@material-ui/core/TextField'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
+import Message from './Message'
+import request from '../utils/request'
+
 import Skeleton from './Skeleton'
 
-const getItems = count =>
-  Array.from({ length: count }, (v, k) => k).map(k => ({
-    id: `item-${k}`,
-    content: `item ${k}`
-  }));
+// const getItems = count =>
+//   Array.from({ length: count }, (v, k) => k).map(k => ({
+//     id: `item-${k}`,
+//     content: `item ${k}`,
+//     editable: false
+//   }));
 
 // a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
@@ -51,7 +55,12 @@ export default class Drag extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: []
+      items: [],
+      snackbar: {
+        open: false,
+        message: '',
+        type: '',
+      },
     };
     this.onDragEnd = this.onDragEnd.bind(this);
   }
@@ -61,6 +70,22 @@ export default class Drag extends React.Component {
     this.setState(produce(draft => {
       draft.items[index].content = newValue
     }))
+  }
+
+  toggleEdit = index => () => {
+    this.setState(produce(draft => {
+      draft.items[index].editable = !draft.items[index].editable
+    }))
+  }
+
+  handleClose = () => {
+    this.setState({
+        snackbar: {
+            open: false,
+            message: '',
+            type: '',
+        },
+    })
   }
 
   onDragEnd(result) {
@@ -80,12 +105,63 @@ export default class Drag extends React.Component {
     });
   }
 
-  componentDidMount() {
-    setTimeout(() => {
-      this.setState({
-        items: getItems(10)
+  handleSave = item => async () => {
+    // TODO: 先更新远程数据，成功后setState
+    try {
+      await request.postJSON(`/update/${item.id}`, {
+        note: item.content,
+        order: this.state.items.map(n => n.id)
       })
-    }, 3000)
+      this.setState(
+          {
+              snackbar: {
+                  open: true,
+                  message: '保存成功',
+                  type: 'success',
+              },
+          },
+      )
+  } catch (e) {
+      this.setState({
+          snackbar: {
+              open: true,
+              message: e.msg,
+              type: 'error',
+          },
+      })
+  }
+
+    console.log('save:', item)
+
+  }
+
+  handleDelete = item => () => {
+    // TODO: 先更新远程数据，成功后setState
+    console.log('del:',item)
+  }
+
+  async componentDidMount() {
+    try {
+      const data = await request.get('/getNotes')
+      if (!data) {
+          return false // 数据为空
+      }
+      console.log('Datas: ', data)
+      let items = []
+      for(let key in data) {
+        items.push({id: key, content: data[key], editable: false})	
+      }
+      this.setState({ items })
+    }
+    catch (e) {
+        this.setState({
+            snackbar: {
+                open: true,
+                message: e.msg,
+                type: 'error',
+            },
+        })
+    }
   }
 
   // Normally you would want to split things out into separate components.
@@ -104,17 +180,26 @@ export default class Drag extends React.Component {
                 snapshot.isDragging,
                 provided.draggableProps.style
                 )}
+              onClick={this.toggleEdit(index)}
                 >
-              <TextField
-                label="Note"
-                multiline
-                rowsMax="6"
-                fullWidth
-                className="input-multiline"
-                value={item.content} onChange={this.handleChange(index)}
-                margin="normal"
-                variant="outlined"
-              />
+              {item.editable ?
+              <div>
+                <TextField
+                  label="Note"
+                  multiline
+                  rowsMax="5"
+                  fullWidth
+                  className="input-multiline"
+                  value={item.content} onChange={this.handleChange(index)}
+                  margin="normal"
+                  variant="outlined"
+                  onClick={this.toggleEdit(index)}
+                /> 
+                <button onClick={this.handleSave(item)}>Save</button>
+                <button onClick={this.handleDelete(item)}>Delete</button>
+              </div> :
+              <div className="text-multiline"><pre>{item.content}</pre></div>
+              }
             </div>
           )}
         </Draggable>
@@ -124,20 +209,23 @@ export default class Drag extends React.Component {
     }
 
     return (
-      <DragDropContext onDragEnd={this.onDragEnd}>
-        <Droppable droppableId="droppable">
-          {(provided, snapshot) => (
-            <div
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            style={getListStyle(snapshot.isDraggingOver)}
-            >
-              {content}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <div>
+        <Message {...this.state.snackbar} onClose={this.handleClose} />
+        <DragDropContext onDragEnd={this.onDragEnd}>
+          <Droppable droppableId="droppable">
+            {(provided, snapshot) => (
+              <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              style={getListStyle(snapshot.isDraggingOver)}
+              >
+                {content}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </div>
     );
   }
 }
