@@ -1,5 +1,9 @@
 import React from 'react';
+import produce from 'immer'
+import TextField from '@material-ui/core/TextField'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
+import Skeleton from './Skeleton'
 
 const getItems = count =>
   Array.from({ length: count }, (v, k) => k).map(k => ({
@@ -25,25 +29,38 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   margin: `0 0 ${grid}px 0`,
 
   // change background colour if dragging
-  background: isDragging ? "lightgreen" : "grey",
+  background: "#fff",
+  border: '2px solid',
+  borderColor: isDragging ? "lightblue" : "transparent",
 
   // styles we need to apply on draggables
   ...draggableStyle
 });
 
 const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? "lightblue" : "lightgrey",
+  boxSizing: 'border-box',
+  background: isDraggingOver ? "lightpink" : "#eee",
+  border: '1px solid #ccc',
   padding: grid,
-  width: 250
+  width: '100%',
+  maxWidth: '480px',
+  margin: '0 auto',
 });
 
 export default class Drag extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: getItems(10)
+      items: []
     };
     this.onDragEnd = this.onDragEnd.bind(this);
+  }
+
+  handleChange = index => event => {
+    const newValue = event.target.value
+    this.setState(produce(draft => {
+      draft.items[index].content = newValue
+    }))
   }
 
   onDragEnd(result) {
@@ -63,35 +80,59 @@ export default class Drag extends React.Component {
     });
   }
 
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({
+        items: getItems(10)
+      })
+    }, 3000)
+  }
+
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
+    let content
+    if (this.state.items.length) {
+      content = this.state.items.map((item, index) => (
+        <Draggable key={item.id} draggableId={item.id} index={index}>
+          {(provided, snapshot) => (
+            <div
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+              {...provided.dragHandleProps}
+              style={getItemStyle(
+                snapshot.isDragging,
+                provided.draggableProps.style
+                )}
+                >
+              <TextField
+                label="Note"
+                multiline
+                rowsMax="6"
+                fullWidth
+                className="input-multiline"
+                value={item.content} onChange={this.handleChange(index)}
+                margin="normal"
+                variant="outlined"
+              />
+            </div>
+          )}
+        </Draggable>
+      ))
+    } else {
+      content = <Skeleton />
+    }
+
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <Droppable droppableId="droppable">
           {(provided, snapshot) => (
             <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              style={getListStyle(snapshot.isDraggingOver)}
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+            style={getListStyle(snapshot.isDraggingOver)}
             >
-              {this.state.items.map((item, index) => (
-                <Draggable key={item.id} draggableId={item.id} index={index}>
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      style={getItemStyle(
-                        snapshot.isDragging,
-                        provided.draggableProps.style
-                      )}
-                    >
-                      {item.content}
-                    </div>
-                  )}
-                </Draggable>
-              ))}
+              {content}
               {provided.placeholder}
             </div>
           )}
