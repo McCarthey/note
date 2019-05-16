@@ -114,3 +114,14 @@
     background-color: #c1c1c1;
     border-radius: 4px;
 }
+
+
+/* 悬浮按钮样式 */
+.btn-feb {
+
+} 
+.btn-feb-create {
+    position: absolute !important;
+    right: 20px;
+    bottom: 20px;
+}

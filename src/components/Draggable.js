@@ -2,18 +2,13 @@ import React from 'react';
 import produce from 'immer'
 import TextField from '@material-ui/core/TextField'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
 import Message from './Message'
 import request from '../utils/request'
 
 import Skeleton from './Skeleton'
-
-// const getItems = count =>
-//   Array.from({ length: count }, (v, k) => k).map(k => ({
-//     id: `item-${k}`,
-//     content: `item ${k}`,
-//     editable: false
-//   }));
 
 // a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
@@ -56,6 +51,7 @@ export default class Drag extends React.Component {
     super(props);
     this.state = {
       items: [],
+      done: false,
       snackbar: {
         open: false,
         message: '',
@@ -105,6 +101,16 @@ export default class Drag extends React.Component {
     });
   }
 
+  handleCreate = () => {
+    const newState = this.state.items.concat({
+      id: (+new Date()).toString(),
+      content: '',
+    })
+    this.setState({
+      items: newState
+    })
+  }
+
   handleSave = item => async () => {
     // TODO: 先更新远程数据，成功后setState
     try {
@@ -121,7 +127,7 @@ export default class Drag extends React.Component {
               },
           },
       )
-  } catch (e) {
+    } catch (e) {
       this.setState({
           snackbar: {
               open: true,
@@ -129,15 +135,30 @@ export default class Drag extends React.Component {
               type: 'error',
           },
       })
+    }
   }
 
-    console.log('save:', item)
-
-  }
-
-  handleDelete = item => () => {
+  handleDelete = item => async () => {
     // TODO: 先更新远程数据，成功后setState
-    console.log('del:',item)
+    try {
+      await request.postJSON(`/delete/${item.id}`)
+      this.setState(produce(draft => {
+        draft.snackbar = {
+          open: true,
+          message: '删除成功',
+          type: 'success',
+        }
+        draft.items = draft.items.splice(draft.items.findIndex(n => n.id === item.id), 1)
+      }))
+    } catch (e) {
+      this.setState({
+          snackbar: {
+              open: true,
+              message: e.msg,
+              type: 'error',
+          },
+      })
+    }
   }
 
   async componentDidMount() {
@@ -147,11 +168,7 @@ export default class Drag extends React.Component {
           return false // 数据为空
       }
       console.log('Datas: ', data)
-      let items = []
-      for(let key in data) {
-        items.push({id: key, content: data[key], editable: false})	
-      }
-      this.setState({ items })
+      this.setState({ items: data, done: true })
     }
     catch (e) {
         this.setState({
@@ -168,7 +185,7 @@ export default class Drag extends React.Component {
   // But in this example everything is just done in one place for simplicity
   render() {
     let content
-    if (this.state.items.length) {
+    if (this.state.items.length || this.state.done) {
       content = this.state.items.map((item, index) => (
         <Draggable key={item.id} draggableId={item.id} index={index}>
           {(provided, snapshot) => (
@@ -211,6 +228,9 @@ export default class Drag extends React.Component {
     return (
       <div>
         <Message {...this.state.snackbar} onClose={this.handleClose} />
+        <Fab color="primary" aria-label="Add" className="btn-feb btn-feb-create" onClick={this.handleCreate}>
+          <AddIcon />
+        </Fab>
         <DragDropContext onDragEnd={this.onDragEnd}>
           <Droppable droppableId="droppable">
             {(provided, snapshot) => (
