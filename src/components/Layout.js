@@ -12,6 +12,7 @@ import { HashRouter as Router, Link, Route } from 'react-router-dom'
 import SignIn from './SignIn'
 import SignUp from './SignUp'
 import MyFirstGrid from './Grid'
+import Drag from './Draggable'
 
 import EventBus from '../utils/evebt-bus'
 
@@ -70,6 +71,7 @@ class ButtonAppBar extends React.Component {
                     <Link to="/">Home</Link>
                     <Link to="/signin/">SignIn</Link>
                     <Link to="/signup/">SignUp</Link>
+                    <Link to="/drag/">Drag</Link>
                 </div>
             )
         }
@@ -85,6 +87,7 @@ class ButtonAppBar extends React.Component {
                     <Route path="/" exact component={MyFirstGrid} />
                     <Route path="/signin/" component={SignIn} />
                     <Route path="/signup/" component={SignUp} />
+                    <Route path="/drag/" component={Drag} />
                 </Router>
             </div>
         )

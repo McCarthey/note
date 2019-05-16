@@ -1,6 +1,6 @@
 class EventBus {
     constructor() {
-        this.events = this.events || new Object()
+        this.events = this.events || {}
     }
 }
 
