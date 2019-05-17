@@ -113,9 +113,8 @@ export default class Drag extends React.Component {
     this.setState(produce(draft => {
       draft.items[index].done = !draft.items[index].done
     }), async () => {
-      console.log(item, index)
       try {
-        await request.postJSON(`/update/${item.id}`, {done: this.state.items[index].done})
+        await request.postJSON(`/update/${item.id}`, { done: this.state.items[index].done })
       } catch (e) {
         this.setState({
           snackbar: {
@@ -129,12 +128,25 @@ export default class Drag extends React.Component {
   }
 
   handleCreate = () => {
-    const newState = this.state.items.concat({
+    const newItem = {
       id: (+new Date()).toString(),
       content: '',
-    })
-    this.setState({
-      items: newState
+      done: false,
+    }
+    this.setState(produce(draft => {
+      draft.items.unshift(newItem)
+    }), async () => {
+      try {
+        await request.postJSON(`/create`, newItem)
+      } catch (e) {
+        this.setState({
+          snackbar: {
+            open: true,
+            message: e.msg,
+            type: 'error',
+          },
+        })
+      }
     })
   }
 
