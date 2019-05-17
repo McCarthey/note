@@ -109,6 +109,14 @@ export default class Drag extends React.Component {
     this.setState({ items, btnSave: true });
   }
 
+  handleToggle = (index) => () => {
+    this.setState(produce(draft => {
+      draft.items[index].done = !draft.items[index].done
+    }), () => {
+      this.handleSave()
+    })
+  }
+
   handleCreate = () => {
     const newState = this.state.items.concat({
       id: (+new Date()).toString(),
@@ -121,7 +129,7 @@ export default class Drag extends React.Component {
 
   handleSave = async () => {
     const postData = this.state.items.map(n => {
-      return { id: n.id, content: n.content }
+      return { id: n.id, content: n.content, done: n.done }
     })
     try {
       await request.postJSON('/updateNotes', {
@@ -177,7 +185,10 @@ export default class Drag extends React.Component {
         return false // 数据为空
       }
       // console.log('Datas: ', data)
-      this.setState({ items: data, done: true })
+      const formatData = data.map(n => {
+        return { id: n.id, content: n.content, done: n.done || false} // 老用户的notes中没有done属性
+      })
+      this.setState({ items: formatData, done: true })
     }
     catch (e) {
       this.setState({
@@ -221,11 +232,12 @@ export default class Drag extends React.Component {
                     onClick={this.toggleEdit(index)}
                   />
                   <div className="input-multiline-btns">
+                    <IconButton onClick={this.handleToggle(index)} variant="contained" size="small"  color="secondary"><CheckIcon /></IconButton>
                     <IconButton onClick={this.handleSave} variant="contained" size="small"  color="secondary"><SaveIcon /></IconButton>
                     <IconButton onClick={this.handleDelete(item)} variant="contained" size="small"><DeleteIcon /></IconButton>
                   </div>
                 </div> :
-                <div className="text-multiline"><pre>{item.content ? item.content : <span style={{ color: '#ccc' }}>点击编辑</span>}</pre></div>
+                <div className="text-multiline" style={item.done ? {textDecoration: 'line-through', color: '#ccc'} : {}}><pre>{item.content ? item.content : <span style={{ color: '#ccc' }}>点击编辑</span>}</pre></div>
               }
             </div>
           )}

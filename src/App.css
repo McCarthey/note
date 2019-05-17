@@ -56,6 +56,7 @@
 
 .text-multiline {
     min-height: 40px;
+    font-size: 18px;
 }
 .text-multiline pre {
     margin: 0;
