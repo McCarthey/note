@@ -109,11 +109,22 @@ export default class Drag extends React.Component {
     this.setState({ items, btnSave: true });
   }
 
-  handleToggle = (index) => () => {
+  handleToggle = (item, index) => () => {
     this.setState(produce(draft => {
       draft.items[index].done = !draft.items[index].done
-    }), () => {
-      this.handleSave()
+    }), async () => {
+      console.log(item, index)
+      try {
+        await request.postJSON(`/update/${item.id}`, {done: this.state.items[index].done})
+      } catch (e) {
+        this.setState({
+          snackbar: {
+            open: true,
+            message: e.msg,
+            type: 'error',
+          },
+        })
+      }
     })
   }
 
@@ -186,7 +197,7 @@ export default class Drag extends React.Component {
       }
       // console.log('Datas: ', data)
       const formatData = data.map(n => {
-        return { id: n.id, content: n.content, done: n.done || false} // 老用户的notes中没有done属性
+        return { id: n.id, content: n.content, done: n.done || false } // 老用户的notes中没有done属性
       })
       this.setState({ items: formatData, done: true })
     }
@@ -232,12 +243,12 @@ export default class Drag extends React.Component {
                     onClick={this.toggleEdit(index)}
                   />
                   <div className="input-multiline-btns">
-                    <IconButton onClick={this.handleToggle(index)} variant="contained" size="small"  color="secondary"><CheckIcon /></IconButton>
-                    <IconButton onClick={this.handleSave} variant="contained" size="small"  color="secondary"><SaveIcon /></IconButton>
+                    <IconButton onClick={this.handleToggle(item, index)} variant="contained" size="small" color="secondary"><CheckIcon /></IconButton>
+                    <IconButton onClick={this.handleSave} variant="contained" size="small" color="secondary"><SaveIcon /></IconButton>
                     <IconButton onClick={this.handleDelete(item)} variant="contained" size="small"><DeleteIcon /></IconButton>
                   </div>
                 </div> :
-                <div className="text-multiline" style={item.done ? {textDecoration: 'line-through', color: '#ccc'} : {}}><pre>{item.content ? item.content : <span style={{ color: '#ccc' }}>点击编辑</span>}</pre></div>
+                <div className="text-multiline" style={item.done ? { textDecoration: 'line-through', color: '#ccc' } : {}}><pre>{item.content ? item.content : <span style={{ color: '#ccc' }}>点击编辑</span>}</pre></div>
               }
             </div>
           )}
