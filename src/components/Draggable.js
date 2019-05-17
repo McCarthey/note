@@ -29,7 +29,7 @@ const grid = 8;
 const getItemStyle = (isDragging, draggableStyle) => ({
   // some basic styles to make the items look a bit nicer
   userSelect: "none",
-  padding: grid * 2,
+  padding: grid / 2,
   margin: `0 0 ${grid}px 0`,
   boxSizing: 'border-box',
   border: '2px solid',
@@ -76,7 +76,8 @@ export default class Drag extends React.Component {
     }))
   }
 
-  toggleEdit = index => () => {
+  toggleEdit = index => (e) => {
+    if (e.target.tagName === 'TEXTAREA') return
     this.setState(produce(draft => {
       draft.items[index].editable = !draft.items[index].editable
     }))
@@ -239,10 +240,9 @@ export default class Drag extends React.Component {
                 snapshot.isDragging,
                 provided.draggableProps.style
               )}
-              onClick={this.toggleEdit(index)}
-            >
+              >
               {item.editable ?
-                <div>
+                <div onClick={this.toggleEdit(index)}>
                   <TextField
                     label="Note"
                     multiline
@@ -252,15 +252,16 @@ export default class Drag extends React.Component {
                     value={item.content} onChange={this.handleChange(index)}
                     margin="normal"
                     variant="outlined"
-                    onClick={this.toggleEdit(index)}
                   />
                   <div className="input-multiline-btns">
-                    <IconButton onClick={this.handleToggle(item, index)} variant="contained" size="small" color="secondary"><CheckIcon /></IconButton>
                     <IconButton onClick={this.handleSave} variant="contained" size="small" color="secondary"><SaveIcon /></IconButton>
                     <IconButton onClick={this.handleDelete(item)} variant="contained" size="small"><DeleteIcon /></IconButton>
                   </div>
                 </div> :
-                <div className="text-multiline" style={item.done ? { textDecoration: 'line-through', color: '#ccc' } : {}}><pre>{item.content ? item.content : <span style={{ color: '#ccc' }}>点击编辑</span>}</pre></div>
+                <div>
+                  <IconButton onClick={this.handleToggle(item, index)} variant="contained" size="small" color="secondary" style={{float: 'left'}}><CheckIcon /></IconButton>
+                  <div className="text-multiline" style={item.done ? { textDecoration: 'line-through', color: '#ccc' } : {}} onClick={this.toggleEdit(index)}><pre>{item.content ? item.content : <span style={{ color: '#ccc' }}>点击编辑</span>}</pre></div>
+                </div>
               }
             </div>
           )}

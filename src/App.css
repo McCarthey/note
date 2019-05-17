@@ -57,9 +57,11 @@
 .text-multiline {
     min-height: 40px;
     font-size: 18px;
+    margin-left: 48px;
 }
 .text-multiline pre {
     margin: 0;
+    line-height: 40px;
 }
 
 /* 骨架屏样式 */
