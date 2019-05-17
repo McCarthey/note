@@ -112,11 +112,12 @@ export default class Drag extends React.Component {
   }
 
   handleSave = item => async () => {
-    // TODO: 先更新远程数据，成功后setState
+    const postData = this.state.items.map(n => {
+      return {id: n.id, content: n.content}
+    })
     try {
-      await request.postJSON(`/update/${item.id}`, {
-        note: item.content,
-        order: this.state.items.map(n => n.id)
+      await request.postJSON('/updateNotes', {
+        notes: postData,
       })
       this.setState(
           {
@@ -139,7 +140,6 @@ export default class Drag extends React.Component {
   }
 
   handleDelete = item => async () => {
-    // TODO: 先更新远程数据，成功后setState
     try {
       await request.postJSON(`/delete/${item.id}`)
       this.setState(produce(draft => {
@@ -148,7 +148,7 @@ export default class Drag extends React.Component {
           message: '删除成功',
           type: 'success',
         }
-        draft.items = draft.items.splice(draft.items.findIndex(n => n.id === item.id), 1)
+        draft.items.splice(draft.items.findIndex(n => n.id === item.id), 1)
       }))
     } catch (e) {
       this.setState({

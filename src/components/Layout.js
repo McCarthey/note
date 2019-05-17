@@ -11,7 +11,6 @@ import { HashRouter as Router, Link, Route } from 'react-router-dom'
 
 import SignIn from './SignIn'
 import SignUp from './SignUp'
-import MyFirstGrid from './Grid'
 import Drag from './Draggable'
 
 import EventBus from '../utils/evebt-bus'
@@ -84,7 +83,7 @@ class ButtonAppBar extends React.Component {
                             {logEle}
                         </Toolbar>
                     </AppBar>
-                    <Route path="/" exact component={MyFirstGrid} />
+                    <Route path="/" exact component={Drag} />
                     <Route path="/signin/" component={SignIn} />
                     <Route path="/signup/" component={SignUp} />
                     <Route path="/drag/" component={Drag} />
