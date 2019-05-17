@@ -1,9 +1,11 @@
 import React from 'react';
 import produce from 'immer'
+import _ from 'lodash/lang'
 import TextField from '@material-ui/core/TextField'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import CheckIcon from '@material-ui/icons/Check'
 
 import Message from './Message'
 import request from '../utils/request'
@@ -52,6 +54,7 @@ export default class Drag extends React.Component {
     this.state = {
       items: [],
       done: false,
+      btnSave: false,
       snackbar: {
         open: false,
         message: '',
@@ -76,11 +79,11 @@ export default class Drag extends React.Component {
 
   handleClose = () => {
     this.setState({
-        snackbar: {
-            open: false,
-            message: '',
-            type: '',
-        },
+      snackbar: {
+        open: false,
+        message: '',
+        type: '',
+      },
     })
   }
 
@@ -96,9 +99,9 @@ export default class Drag extends React.Component {
       result.destination.index
     );
 
-    this.setState({
-      items
-    });
+    if (_.isEqual(items, this.state.items)) return
+
+    this.setState({ items, btnSave: true });
   }
 
   handleCreate = () => {
@@ -111,30 +114,31 @@ export default class Drag extends React.Component {
     })
   }
 
-  handleSave = item => async () => {
+  handleSave = async () => {
     const postData = this.state.items.map(n => {
-      return {id: n.id, content: n.content}
+      return { id: n.id, content: n.content }
     })
     try {
       await request.postJSON('/updateNotes', {
         notes: postData,
       })
       this.setState(
-          {
-              snackbar: {
-                  open: true,
-                  message: '保存成功',
-                  type: 'success',
-              },
+        {
+          snackbar: {
+            open: true,
+            message: '保存成功',
+            type: 'success',
           },
+          btnSave: false
+        },
       )
     } catch (e) {
       this.setState({
-          snackbar: {
-              open: true,
-              message: e.msg,
-              type: 'error',
-          },
+        snackbar: {
+          open: true,
+          message: e.msg,
+          type: 'error',
+        },
       })
     }
   }
@@ -152,11 +156,11 @@ export default class Drag extends React.Component {
       }))
     } catch (e) {
       this.setState({
-          snackbar: {
-              open: true,
-              message: e.msg,
-              type: 'error',
-          },
+        snackbar: {
+          open: true,
+          message: e.msg,
+          type: 'error',
+        },
       })
     }
   }
@@ -165,57 +169,56 @@ export default class Drag extends React.Component {
     try {
       const data = await request.get('/getNotes')
       if (!data) {
-          return false // 数据为空
+        return false // 数据为空
       }
       console.log('Datas: ', data)
       this.setState({ items: data, done: true })
     }
     catch (e) {
-        this.setState({
-            snackbar: {
-                open: true,
-                message: e.msg,
-                type: 'error',
-            },
-        })
+      this.setState({
+        snackbar: {
+          open: true,
+          message: e.msg,
+          type: 'error',
+        },
+      })
     }
   }
 
-  // Normally you would want to split things out into separate components.
-  // But in this example everything is just done in one place for simplicity
   render() {
     let content
+    let btnSave
     if (this.state.items.length || this.state.done) {
       content = this.state.items.map((item, index) => (
         <Draggable key={item.id} draggableId={item.id} index={index}>
           {(provided, snapshot) => (
             <div
-            ref={provided.innerRef}
-            {...provided.draggableProps}
+              ref={provided.innerRef}
+              {...provided.draggableProps}
               {...provided.dragHandleProps}
               style={getItemStyle(
                 snapshot.isDragging,
                 provided.draggableProps.style
-                )}
+              )}
               onClick={this.toggleEdit(index)}
-                >
+            >
               {item.editable ?
-              <div>
-                <TextField
-                  label="Note"
-                  multiline
-                  rowsMax="5"
-                  fullWidth
-                  className="input-multiline"
-                  value={item.content} onChange={this.handleChange(index)}
-                  margin="normal"
-                  variant="outlined"
-                  onClick={this.toggleEdit(index)}
-                /> 
-                <button onClick={this.handleSave(item)}>Save</button>
-                <button onClick={this.handleDelete(item)}>Delete</button>
-              </div> :
-              <div className="text-multiline"><pre>{item.content}</pre></div>
+                <div>
+                  <TextField
+                    label="Note"
+                    multiline
+                    rowsMax="5"
+                    fullWidth
+                    className="input-multiline"
+                    value={item.content} onChange={this.handleChange(index)}
+                    margin="normal"
+                    variant="outlined"
+                    onClick={this.toggleEdit(index)}
+                  />
+                  <button onClick={this.handleSave}>Save</button>
+                  <button onClick={this.handleDelete(item)}>Delete</button>
+                </div> :
+                <div className="text-multiline"><pre>{item.content ? item.content : <span style={{ color: '#ccc' }}>点击编辑</span>}</pre></div>
               }
             </div>
           )}
@@ -225,19 +228,26 @@ export default class Drag extends React.Component {
       content = <Skeleton />
     }
 
+    if (this.state.btnSave) {
+      btnSave = <Fab color="secondary" aria-label="Edit" className="btn-feb btn-feb-save" onClick={this.handleSave}>
+        <CheckIcon />
+      </Fab>
+    }
+
     return (
       <div>
         <Message {...this.state.snackbar} onClose={this.handleClose} />
         <Fab color="primary" aria-label="Add" className="btn-feb btn-feb-create" onClick={this.handleCreate}>
           <AddIcon />
         </Fab>
+        {btnSave}
         <DragDropContext onDragEnd={this.onDragEnd}>
           <Droppable droppableId="droppable">
             {(provided, snapshot) => (
               <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              style={getListStyle(snapshot.isDraggingOver)}
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                style={getListStyle(snapshot.isDraggingOver)}
               >
                 {content}
                 {provided.placeholder}

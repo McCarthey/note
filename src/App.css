@@ -118,10 +118,15 @@
 
 /* 悬浮按钮样式 */
 .btn-feb {
+    position: fixed !important;
+}
 
-} 
 .btn-feb-create {
-    position: absolute !important;
     right: 20px;
+    bottom: 20px;
+}
+
+.btn-feb-save {
+    left: 20px;
     bottom: 20px;
 }
