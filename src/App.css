@@ -49,6 +49,11 @@
 .input-multiline {
 }
 
+.input-multiline-btns {
+    display: flex;
+    justify-content: flex-end;
+}
+
 .text-multiline {
     min-height: 40px;
 }

@@ -4,8 +4,11 @@ import _ from 'lodash/lang'
 import TextField from '@material-ui/core/TextField'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Fab from '@material-ui/core/Fab';
+import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import CheckIcon from '@material-ui/icons/Check'
+import SaveIcon from '@material-ui/icons/Save'
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import Message from './Message'
 import request from '../utils/request'
@@ -173,7 +176,7 @@ export default class Drag extends React.Component {
       if (!data) {
         return false // 数据为空
       }
-      console.log('Datas: ', data)
+      // console.log('Datas: ', data)
       this.setState({ items: data, done: true })
     }
     catch (e) {
@@ -217,8 +220,10 @@ export default class Drag extends React.Component {
                     variant="outlined"
                     onClick={this.toggleEdit(index)}
                   />
-                  <button onClick={this.handleSave}>Save</button>
-                  <button onClick={this.handleDelete(item)}>Delete</button>
+                  <div className="input-multiline-btns">
+                    <IconButton onClick={this.handleSave} variant="contained" size="small"  color="secondary"><SaveIcon /></IconButton>
+                    <IconButton onClick={this.handleDelete(item)} variant="contained" size="small"><DeleteIcon /></IconButton>
+                  </div>
                 </div> :
                 <div className="text-multiline"><pre>{item.content ? item.content : <span style={{ color: '#ccc' }}>点击编辑</span>}</pre></div>
               }
