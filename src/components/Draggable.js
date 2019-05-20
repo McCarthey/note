@@ -259,7 +259,7 @@ export default class Drag extends React.Component {
                   </div>
                 </div> :
                 <div>
-                  <IconButton onClick={this.handleToggle(item, index)} variant="contained" size="small" color="secondary" style={{float: 'left'}}><CheckIcon /></IconButton>
+                  <IconButton onClick={this.handleToggle(item, index)} variant="contained" size="small" color={item.done? 'secondary' : 'default'} style={{float: 'left'}}><CheckIcon /></IconButton>
                   <div className="text-multiline" style={item.done ? { textDecoration: 'line-through', color: '#ccc' } : {}} onClick={this.toggleEdit(index)}><pre>{item.content ? item.content : <span style={{ color: '#ccc' }}>点击编辑</span>}</pre></div>
                 </div>
               }
