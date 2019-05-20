@@ -1,6 +1,7 @@
 import React from 'react';
 import produce from 'immer'
 import _ from 'lodash/lang'
+import { debounce } from 'lodash/function'
 import TextField from '@material-ui/core/TextField'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Fab from '@material-ui/core/Fab';
@@ -110,7 +111,7 @@ export default class Drag extends React.Component {
     this.setState({ items, btnSave: true });
   }
 
-  handleToggle = (item, index) => () => {
+  handleToggle = (item, index) => debounce(() => {
     this.setState(produce(draft => {
       draft.items[index].done = !draft.items[index].done
     }), async () => {
@@ -126,7 +127,7 @@ export default class Drag extends React.Component {
         })
       }
     })
-  }
+  }, 200)
 
   handleCreate = () => {
     const newItem = {
