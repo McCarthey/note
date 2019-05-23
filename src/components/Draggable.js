@@ -29,7 +29,9 @@ const grid = 8;
 
 const getItemStyle = (isDragging, draggableStyle) => ({
   // some basic styles to make the items look a bit nicer
+  position: 'relative',
   userSelect: "none",
+  zIndex: '3',
   padding: grid / 2,
   margin: `0 0 ${grid}px 0`,
   boxSizing: 'border-box',
@@ -44,9 +46,9 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   ...draggableStyle
 });
 
-const getListStyle = isDraggingOver => ({
+const getListStyle = (isDraggingOver, isDragging) => ({
   boxSizing: 'border-box',
-  maxHeight: 'calc(100vh - 64px)',
+  maxHeight: isDragging ? 'calc(100vh - 64px - 64px)' : 'calc(100vh - 64px)',
   overflow: 'auto',
   background: isDraggingOver ? "#e1f5fe" : "#fff",
   border: '1px solid #ddd',
@@ -60,11 +62,12 @@ const getDeleteAreaStyle = isDraggingOver => ({
   position: 'fixed',
   bottom: '0',
   textAlign: 'center',
+  transition: '.3s',
   color: isDraggingOver ? '#fff' : '#e53935',
   background: isDraggingOver ? "#e53935" : "transparent",
   padding: grid,
   width: '100%',
-  height: '60px',
+  height: '48px',
   margin: '0 auto',
 });
 
@@ -308,7 +311,7 @@ export default class Drag extends React.Component {
               <div
                 {...provided.droppableProps}
                 ref={provided.innerRef}
-                style={getListStyle(snapshot.isDraggingOver)}
+                style={getListStyle(snapshot.isDraggingOver, this.state.deleteAreaShow)}
               >
                 {content}
                 {provided.placeholder}
