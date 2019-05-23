@@ -127,6 +127,7 @@
 /* 悬浮按钮样式 */
 .btn-feb {
     position: fixed !important;
+    z-index: 10;
 }
 
 .btn-feb-create {

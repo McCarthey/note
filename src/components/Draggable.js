@@ -46,11 +46,25 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 
 const getListStyle = isDraggingOver => ({
   boxSizing: 'border-box',
+  maxHeight: 'calc(100vh - 64px)',
+  overflow: 'auto',
   background: isDraggingOver ? "#e1f5fe" : "#fff",
   border: '1px solid #ddd',
   padding: grid,
   width: '100%',
   maxWidth: '480px',
+  margin: '0 auto',
+});
+
+const getDeleteAreaStyle = isDraggingOver => ({
+  position: 'fixed',
+  bottom: '0',
+  textAlign: 'center',
+  color: isDraggingOver ? '#fff' : '#e53935',
+  background: isDraggingOver ? "#e53935" : "transparent",
+  padding: grid,
+  width: '100%',
+  height: '60px',
   margin: '0 auto',
 });
 
@@ -61,7 +75,7 @@ export default class Drag extends React.Component {
       items: [],
       done: false,
       btnSave: false,
-      showPost: true,
+      deleteAreaShow: false,
       snackbar: {
         open: false,
         message: '',
@@ -69,6 +83,7 @@ export default class Drag extends React.Component {
       },
     };
     this.onDragEnd = this.onDragEnd.bind(this);
+    this.onDragStart = this.onDragStart.bind(this);
   }
 
   handleChange = index => event => {
@@ -95,10 +110,22 @@ export default class Drag extends React.Component {
     })
   }
 
+  onDragStart() {
+    this.setState({
+      deleteAreaShow: true
+    })
+  }
+
   onDragEnd(result) {
     // dropped outside the list
     if (!result.destination) {
       return;
+    }
+
+    // console.log(result.destination.droppableId, this.state.items[result.source.index])
+    if (result.destination.droppableId === 'deleteArea') { // 调用删除逻辑
+      const itemToDelete = this.state.items[result.source.index]
+     this.handleDelete(itemToDelete.id)()
     }
 
     const items = reorder(
@@ -107,7 +134,9 @@ export default class Drag extends React.Component {
       result.destination.index
     );
 
-    if (_.isEqual(items, this.state.items)) return
+    this.setState({ deleteAreaShow: false })
+
+    if (result.destination.droppableId === 'deleteArea' && _.isEqual(items, this.state.items)) return
 
     this.setState({ items, btnSave: true });
   }
@@ -170,16 +199,17 @@ export default class Drag extends React.Component {
     }
   }
 
-  handleDelete = item => async () => {
+  handleDelete = itemId => async () => {
     try {
-      await request.postJSON(`/delete/${item.id}`)
+      await request.postJSON(`/delete/${itemId}`)
       this.setState(produce(draft => {
         draft.snackbar = {
           open: true,
           message: '删除成功',
           type: 'success',
         }
-        draft.items.splice(draft.items.findIndex(n => n.id === item.id), 1)
+        draft.items.splice(draft.items.findIndex(n => n.id === itemId), 1)
+        draft.btnSave = false
       }))
     } catch (e) {
       this.setState({
@@ -245,7 +275,7 @@ export default class Drag extends React.Component {
                   />
                   <div className="input-multiline-btns">
                     <IconButton onClick={this.handleSave} variant="contained" size="small" color="secondary"><SaveIcon /></IconButton>
-                    <IconButton onClick={this.handleDelete(item)} variant="contained" size="small"><DeleteIcon /></IconButton>
+                    <IconButton onClick={this.handleDelete(item.id)} variant="contained" size="small"><DeleteIcon /></IconButton>
                   </div>
                 </div> :
                 <div>
@@ -272,7 +302,7 @@ export default class Drag extends React.Component {
         <Message {...this.state.snackbar} onClose={this.handleClose} />
         {btnSave}
         <Post onCreateSuccess={this.handleCreateSuccess} />
-        <DragDropContext onDragEnd={this.onDragEnd}>
+        <DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd}>
           <Droppable droppableId="droppable">
             {(provided, snapshot) => (
               <div
@@ -281,6 +311,18 @@ export default class Drag extends React.Component {
                 style={getListStyle(snapshot.isDraggingOver)}
               >
                 {content}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+          <Droppable droppableId="deleteArea">
+            {(provided, snapshot) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                style={getDeleteAreaStyle(snapshot.isDraggingOver)}
+              > 
+                {this.state.deleteAreaShow ? <DeleteIcon /> : ''}
                 {provided.placeholder}
               </div>
             )}
