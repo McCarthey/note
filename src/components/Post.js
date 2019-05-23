@@ -38,13 +38,21 @@ function Transition(props) {
 }
 
 class FullScreenDialog extends React.Component {
-  state = {
-    open: false,
-    content: ''
-  };
+  constructor(props) {
+    super(props)
+    this.textareaRef = React.createRef()
+    this.state = {
+      open: false,
+      content: ''
+    }
+  }
 
   handleClickOpen = () => {
-    this.setState({ open: true });
+    this.setState({ open: true }, () => {
+      setTimeout(() => {
+        this.textareaRef.current.focus()
+      }, 300)
+    });
   };
 
   handleSave = async () => {
@@ -94,7 +102,7 @@ class FullScreenDialog extends React.Component {
               </Button>
             </Toolbar>
           </AppBar>
-          <textarea className={classes.textarea} value={this.state.content} onChange={(e) => this.setState({ content: e.target.value })} />
+          <textarea ref={this.textareaRef} className={classes.textarea} value={this.state.content} onChange={(e) => this.setState({ content: e.target.value })} />
         </Dialog>
       </div>
     );
