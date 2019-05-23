@@ -6,7 +6,6 @@ import TextField from '@material-ui/core/TextField'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
-import AddIcon from '@material-ui/icons/Add';
 import CheckIcon from '@material-ui/icons/Check'
 import SaveIcon from '@material-ui/icons/Save'
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -14,6 +13,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Message from './Message'
 import request from '../utils/request'
 
+import Post from './Post'
 import Skeleton from './Skeleton'
 
 // a little function to help us with reordering the result
@@ -61,6 +61,7 @@ export default class Drag extends React.Component {
       items: [],
       done: false,
       btnSave: false,
+      showPost: true,
       snackbar: {
         open: false,
         message: '',
@@ -129,27 +130,15 @@ export default class Drag extends React.Component {
     })
   }, 200)
 
-  handleCreate = () => {
-    const newItem = {
-      id: (+new Date()).toString(),
-      content: '',
-      done: false,
-    }
+  handleCreateSuccess = (newItem) => {
     this.setState(produce(draft => {
       draft.items.unshift(newItem)
-    }), async () => {
-      try {
-        await request.postJSON(`/create`, newItem)
-      } catch (e) {
-        this.setState({
-          snackbar: {
-            open: true,
-            message: e.msg,
-            type: 'error',
-          },
-        })
+      draft.snackbar = {
+        open: true,
+        message: '创建成功',
+        type: 'success',
       }
-    })
+    }))
   }
 
   handleSave = async () => {
@@ -281,10 +270,8 @@ export default class Drag extends React.Component {
     return (
       <div>
         <Message {...this.state.snackbar} onClose={this.handleClose} />
-        <Fab color="primary" aria-label="Add" className="btn-feb btn-feb-create" onClick={this.handleCreate}>
-          <AddIcon />
-        </Fab>
         {btnSave}
+        <Post onCreateSuccess={this.handleCreateSuccess} />
         <DragDropContext onDragEnd={this.onDragEnd}>
           <Droppable droppableId="droppable">
             {(provided, snapshot) => (

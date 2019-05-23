@@ -67,9 +67,9 @@ class ButtonAppBar extends React.Component {
         } else {
             logEle = (
                 <div className="link-wrapper">
-                    <Link to="/">Home</Link>
-                    <Link to="/signin/">SignIn</Link>
-                    <Link to="/signup/">SignUp</Link>
+                    <Link to="/">笔记</Link>
+                    <Link to="/signin/">登录</Link>
+                    <Link to="/signup/">注册</Link>
                 </div>
             )
         }
