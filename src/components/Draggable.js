@@ -140,7 +140,8 @@ export default class Drag extends React.Component {
 
     this.setState({ deleteAreaShow: false })
 
-    if (result.destination.droppableId === 'deleteArea' && _.isEqual(items, this.state.items)) return
+    if(_.isEqual(items, this.state.items)) return
+    if (result.destination.droppableId === 'deleteArea') return
 
     this.setState({ items, btnSave: true });
   }
@@ -187,6 +188,10 @@ export default class Drag extends React.Component {
       this.setState({ items: formatData, done: true })
     }
     catch (e) {
+      if(e.code === 999) {
+          this.props.history.push('/signin')
+          return
+      }
       this.setState({
         snackbar: {
           open: true,
@@ -251,6 +256,10 @@ export default class Drag extends React.Component {
 
   componentDidMount() {
     this.getNotes()  
+  }
+
+  componentWillUnmount() {
+
   }
 
   render() {

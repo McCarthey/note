@@ -35,6 +35,9 @@ class ButtonAppBar extends React.Component {
     }
 
     async componentDidMount() {
+        if(document.cookie.includes('uid')) {
+            localStorage.setItem('MC_NOTE_APP_LOGIN', 1)
+        }
         EventBus.addListener('login', () => {
             this.setState({ isLoggedIn: true })
         })
@@ -50,6 +53,7 @@ class ButtonAppBar extends React.Component {
         try {
             await request.postJSON('/logout', {})
             this.setState({ isLoggedIn: false })
+            localStorage.setItem('MC_NOTE_APP_LOGIN', '')
         } catch (e) {
             console.log(e)
         }

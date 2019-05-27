@@ -74,6 +74,10 @@ export default class SignUp extends React.Component {
         }
     }
 
+    componentWillMount() {
+        if(localStorage.getItem('MC_NOTE_APP_LOGIN')) this.props.history.push('/')
+    }
+
     render() {
         return (
             <div>

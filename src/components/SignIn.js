@@ -60,6 +60,7 @@ export default class SignIn extends React.Component {
                 () => {
                     setTimeout(() => {
                         this.props.history.push('/')
+                        localStorage.setItem('MC_NOTE_APP_LOGIN', 1)
                         EventBus.emit('login')
                     }, 1000)
                 },
@@ -73,6 +74,10 @@ export default class SignIn extends React.Component {
                 },
             })
         }
+    }
+
+    componentWillMount() {
+        if(localStorage.getItem('MC_NOTE_APP_LOGIN')) this.props.history.push('/')
     }
 
     render() {
