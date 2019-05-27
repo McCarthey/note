@@ -62,6 +62,7 @@
 .text-multiline pre {
     margin: 0;
     line-height: 40px;
+    white-space: pre-line;
 }
 
 /* 骨架屏样式 */

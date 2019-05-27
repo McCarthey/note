@@ -1,5 +1,6 @@
 import React from 'react';
 import produce from 'immer'
+import QueueAnim from 'rc-queue-anim'
 import _ from 'lodash/lang'
 import { debounce } from 'lodash/function'
 import TextField from '@material-ui/core/TextField'
@@ -49,7 +50,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 const getListStyle = (isDraggingOver, isDragging) => ({
   boxSizing: 'border-box',
   maxHeight: isDragging ? 'calc(100vh - 64px - 64px)' : 'calc(100vh - 64px)',
-  overflow: 'auto',
+  overflow: 'hidden auto',
   background: isDraggingOver ? "#e1f5fe" : "#fff",
   border: '1px solid #ddd',
   padding: grid,
@@ -128,7 +129,7 @@ export default class Drag extends React.Component {
     // console.log(result.destination.droppableId, this.state.items[result.source.index])
     if (result.destination.droppableId === 'deleteArea') { // 调用删除逻辑
       const itemToDelete = this.state.items[result.source.index]
-     this.handleDelete(itemToDelete.id)()
+      this.handleDelete(itemToDelete.id)()
     }
 
     const items = reorder(
@@ -171,6 +172,29 @@ export default class Drag extends React.Component {
         type: 'success',
       }
     }))
+  }
+
+  getNotes = async () => {
+    try {
+      const data = await request.get('/getNotes')
+      if (!data) {
+        return false // 数据为空
+      }
+      // console.log('Datas: ', data)
+      const formatData = data.map(n => {
+        return { id: n.id, content: n.content, done: n.done || false } // 老用户的notes中没有done属性
+      })
+      this.setState({ items: formatData, done: true })
+    }
+    catch (e) {
+      this.setState({
+        snackbar: {
+          open: true,
+          message: e.msg,
+          type: 'error',
+        },
+      })
+    }
   }
 
   handleSave = async () => {
@@ -225,27 +249,8 @@ export default class Drag extends React.Component {
     }
   }
 
-  async componentDidMount() {
-    try {
-      const data = await request.get('/getNotes')
-      if (!data) {
-        return false // 数据为空
-      }
-      // console.log('Datas: ', data)
-      const formatData = data.map(n => {
-        return { id: n.id, content: n.content, done: n.done || false } // 老用户的notes中没有done属性
-      })
-      this.setState({ items: formatData, done: true })
-    }
-    catch (e) {
-      this.setState({
-        snackbar: {
-          open: true,
-          message: e.msg,
-          type: 'error',
-        },
-      })
-    }
+  componentDidMount() {
+    this.getNotes()  
   }
 
   render() {
@@ -263,7 +268,7 @@ export default class Drag extends React.Component {
                 snapshot.isDragging,
                 provided.draggableProps.style
               )}
-              >
+            >
               {item.editable ?
                 <div onClick={this.toggleEdit(index)}>
                   <TextField
@@ -282,7 +287,7 @@ export default class Drag extends React.Component {
                   </div>
                 </div> :
                 <div>
-                  <IconButton onClick={this.handleToggle(item, index)} variant="contained" size="small" color={item.done? 'secondary' : 'default'} style={{float: 'left'}}><CheckIcon /></IconButton>
+                  <IconButton onClick={this.handleToggle(item, index)} variant="contained" size="small" color={item.done ? 'secondary' : 'default'} style={{ float: 'left' }}><CheckIcon /></IconButton>
                   <div className="text-multiline" style={item.done ? { textDecoration: 'line-through', color: '#ccc' } : {}} onClick={this.toggleEdit(index)}><pre>{item.content ? item.content : <span style={{ color: '#ccc' }}>点击编辑</span>}</pre></div>
                 </div>
               }
@@ -306,25 +311,27 @@ export default class Drag extends React.Component {
         {btnSave}
         <Post onCreateSuccess={this.handleCreateSuccess} />
         <DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd}>
-          <Droppable droppableId="droppable">
-            {(provided, snapshot) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                style={getListStyle(snapshot.isDraggingOver, this.state.deleteAreaShow)}
-              >
-                {content}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+            <Droppable droppableId="droppable">
+              {(provided, snapshot) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  style={getListStyle(snapshot.isDraggingOver, this.state.deleteAreaShow)}
+                >
+                  <QueueAnim type={['right']}>
+                  {content}
+                  {provided.placeholder}
+                  </QueueAnim>
+                </div>
+              )}
+            </Droppable>
           <Droppable droppableId="deleteArea">
             {(provided, snapshot) => (
               <div
                 {...provided.droppableProps}
                 ref={provided.innerRef}
                 style={getDeleteAreaStyle(snapshot.isDraggingOver)}
-              > 
+              >
                 {this.state.deleteAreaShow ? <DeleteIcon /> : ''}
                 {provided.placeholder}
               </div>
