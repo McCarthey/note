@@ -3,10 +3,12 @@ import produce from 'immer'
 import QueueAnim from 'rc-queue-anim'
 import _ from 'lodash/lang'
 import { debounce } from 'lodash/function'
+import TextField from '@material-ui/core/TextField'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import CheckIcon from '@material-ui/icons/Check'
+import SaveIcon from '@material-ui/icons/Save'
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import Message from './Message'
@@ -78,12 +80,6 @@ export default class Drag extends React.Component {
       done: false,
       btnSave: false,
       deleteAreaShow: false,
-      editItem: {
-        id: '',
-        content: '',
-        done: false,
-        index: null
-      },
       snackbar: {
         open: false,
         message: '',
@@ -99,11 +95,6 @@ export default class Drag extends React.Component {
     this.setState(produce(draft => {
       draft.items[index].content = newValue
     }))
-  }
-
-  handleEdit = (item, index) => () => {
-    console.log(item, index)
-    this.setState({ editItem: { ...item, index } }, () => console.log(this.state.editItem))
   }
 
   toggleEdit = index => (e) => {
@@ -149,7 +140,7 @@ export default class Drag extends React.Component {
 
     this.setState({ deleteAreaShow: false })
 
-    if (_.isEqual(items, this.state.items)) return
+    if(_.isEqual(items, this.state.items)) return
     if (result.destination.droppableId === 'deleteArea') return
 
     this.setState({ items, btnSave: true });
@@ -173,26 +164,15 @@ export default class Drag extends React.Component {
     })
   }, 200)
 
-  handleUpdateSuccess = type => (newItem) => {
-    if (type === 'create') {
-      this.setState(produce(draft => {
-        draft.items.unshift(newItem)
-        draft.snackbar = {
-          open: true,
-          message: '创建成功',
-          type: 'success',
-        }
-      }))
-    } else if (type === 'edit') {
-      this.setState(produce(draft => {
-        draft.items[draft.items.findIndex(i => i.id === newItem.id)].content = newItem.content
-        draft.snackbar = {
-          open: true,
-          message: '修改成功',
-          type: 'success',
-        }
-      }))
-    }
+  handleCreateSuccess = (newItem) => {
+    this.setState(produce(draft => {
+      draft.items.unshift(newItem)
+      draft.snackbar = {
+        open: true,
+        message: '创建成功',
+        type: 'success',
+      }
+    }))
   }
 
   getNotes = async () => {
@@ -208,9 +188,9 @@ export default class Drag extends React.Component {
       this.setState({ items: formatData, done: true })
     }
     catch (e) {
-      if (e.code === 999) {
-        this.props.history.push('/signin')
-        return
+      if(e.code === 999) {
+          this.props.history.push('/signin')
+          return
       }
       this.setState({
         snackbar: {
@@ -275,7 +255,7 @@ export default class Drag extends React.Component {
   }
 
   componentDidMount() {
-    this.getNotes()
+    this.getNotes()  
   }
 
   componentWillUnmount() {
@@ -298,10 +278,28 @@ export default class Drag extends React.Component {
                 provided.draggableProps.style
               )}
             >
-              <div>
-                <IconButton onClick={this.handleToggle(item, index)} variant="contained" size="small" color={item.done ? 'secondary' : 'default'} style={{ float: 'left' }}><CheckIcon /></IconButton>
-                <div className="text-multiline" style={item.done ? { textDecoration: 'line-through', color: '#ccc' } : {}} onClick={this.handleEdit(item, index)}><pre>{item.content ? item.content : <span style={{ color: '#ccc' }}>点击编辑</span>}</pre></div>
-              </div>
+              {item.editable ?
+                <div onClick={this.toggleEdit(index)}>
+                  <TextField
+                    label="Note"
+                    multiline
+                    rowsMax="5"
+                    fullWidth
+                    className="input-multiline"
+                    value={item.content} onChange={this.handleChange(index)}
+                    margin="normal"
+                    variant="outlined"
+                  />
+                  <div className="input-multiline-btns">
+                    <IconButton onClick={this.handleSave} variant="contained" size="small" color="secondary"><SaveIcon /></IconButton>
+                    <IconButton onClick={this.handleDelete(item.id)} variant="contained" size="small"><DeleteIcon /></IconButton>
+                  </div>
+                </div> :
+                <div>
+                  <IconButton onClick={this.handleToggle(item, index)} variant="contained" size="small" color={item.done ? 'secondary' : 'default'} style={{ float: 'left' }}><CheckIcon /></IconButton>
+                  <div className="text-multiline" style={item.done ? { textDecoration: 'line-through', color: '#ccc' } : {}} onClick={this.toggleEdit(index)}><pre>{item.content ? item.content : <span style={{ color: '#ccc' }}>点击编辑</span>}</pre></div>
+                </div>
+              }
             </div>
           )}
         </Draggable>
@@ -320,22 +318,22 @@ export default class Drag extends React.Component {
       <div>
         <Message {...this.state.snackbar} onClose={this.handleClose} />
         {btnSave}
-        <Post onCreateSuccess={this.handleUpdateSuccess('create')} item={this.state.editItem} onEditSuccess={this.handleUpdateSuccess('edit')} />
+        <Post onCreateSuccess={this.handleCreateSuccess} />
         <DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd}>
-          <Droppable droppableId="droppable">
-            {(provided, snapshot) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                style={getListStyle(snapshot.isDraggingOver, this.state.deleteAreaShow)}
-              >
-                <QueueAnim type={['right']}>
+            <Droppable droppableId="droppable">
+              {(provided, snapshot) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  style={getListStyle(snapshot.isDraggingOver, this.state.deleteAreaShow)}
+                >
+                  <QueueAnim type={['right']}>
                   {content}
                   {provided.placeholder}
-                </QueueAnim>
-              </div>
-            )}
-          </Droppable>
+                  </QueueAnim>
+                </div>
+              )}
+            </Droppable>
           <Droppable droppableId="deleteArea">
             {(provided, snapshot) => (
               <div

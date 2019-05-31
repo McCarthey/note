@@ -43,7 +43,8 @@ class FullScreenDialog extends React.Component {
     this.textareaRef = React.createRef()
     this.state = {
       open: false,
-      content: ''
+      content: '',
+      id: '',
     }
   }
 
@@ -57,6 +58,20 @@ class FullScreenDialog extends React.Component {
 
   handleSave = async () => {
     console.log('clicked Save')
+    // 编辑
+    const { id, content } = this.state
+    if (id) {
+      try {
+        await request.postJSON(`/update/${id}`, { content })
+        this.setState({ open: false, content: '', id: '' })
+        this.props.onEditSuccess({ id, content }) // 通知父组件创建成功
+      } catch (e) {
+        console.log(e)
+      }
+      return
+    }
+
+    // 创建    
     const newItem = {
       id: (+new Date()).toString(),
       content: this.state.content,
@@ -72,8 +87,15 @@ class FullScreenDialog extends React.Component {
   }
 
   handleClose = () => {
-    this.setState({ open: false });
+    this.setState({ open: false, content: '', id: '' });
   };
+
+  componentDidUpdate(prevProps) {
+    const item = this.props.item
+    if (item !== prevProps.item) { // ？？？
+      this.setState({ open: true, content: item.content, id: item.id }) // 在componentDidUpdate生命周期中setState时，必须在条件语句中执行，否在会陷入死循环
+    }
+  }
 
   render() {
     const { classes } = this.props;
