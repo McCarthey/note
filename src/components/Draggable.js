@@ -209,6 +209,7 @@ export default class Drag extends React.Component {
     }
     catch (e) {
       if (e.code === 999) {
+        localStorage.setItem('MC_NOTE_APP_LOGIN', '')
         this.props.history.push('/signin')
         return
       }
