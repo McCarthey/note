@@ -117,7 +117,7 @@ class FullScreenDialog extends React.Component {
                 <CloseIcon />
               </IconButton>
               <Typography variant="h6" color="inherit" className={classes.flex}>
-                新建笔记
+                {this.state.id ? '编辑笔记' : '新建笔记'}
               </Typography>
               <Button color="inherit" onClick={this.handleSave}>
                 保存
