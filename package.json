@@ -9,7 +9,7 @@
     "gh-pages": "^2.0.1",
     "immer": "^3.1.2",
     "isomorphic-unfetch": "^3.0.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "rc-queue-anim": "^1.6.12",
     "rc-tween-one": "^2.4.1",
     "react": "^16.8.6",
