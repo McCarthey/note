@@ -9,14 +9,13 @@
 }
 
 .App-header {
-    /* background-color: #282c34; */
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    /* color: white; */
+    margin-bottom: 20px;
+}
+
+@media screen and (max-width: 500px) {
+    .App-header {
+        margin-bottom: 0px;
+    }
 }
 
 .App-link {
@@ -67,7 +66,6 @@
 
 /* 骨架屏样式 */
 .skeleton {
-
 }
 
 .skeleton .skeleton-head,
@@ -123,7 +121,6 @@
     background-color: #c1c1c1;
     border-radius: 4px;
 }
-
 
 /* 悬浮按钮样式 */
 .btn-feb {

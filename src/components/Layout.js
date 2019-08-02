@@ -19,6 +19,7 @@ import EventBus from '../utils/evebt-bus'
 const styles = {
     root: {
         flexGrow: 1,
+        marginBottom: 20
     },
     grow: {
         flexGrow: 1,
@@ -81,7 +82,7 @@ class ButtonAppBar extends React.Component {
         return (
             <div className={classes.root}>
                 <Router>
-                    <AppBar position="static">
+                    <AppBar position="static" className="App-header">
                         <Toolbar>
                             <Typography variant="h6" color="inherit" className={classes.grow} />
                             {logEle}

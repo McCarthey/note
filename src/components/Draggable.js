@@ -55,6 +55,7 @@ const getListStyle = (isDraggingOver, isDragging) => ({
   padding: grid,
   width: '100%',
   maxWidth: '480px',
+  boxShadow: '0 4px 10px #ddd',
   margin: '0 auto',
 });
 
