@@ -11,6 +11,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import Message from './Message'
 import request from '../utils/request'
+import EventBus from '../utils/evebt-bus.js'
 
 import Post from './Post'
 import Skeleton from './Skeleton'
@@ -277,6 +278,9 @@ export default class Drag extends React.Component {
 
   componentDidMount() {
     this.getNotes()
+    EventBus.addListener('logout', () => {
+      this.props.history.push('/signin')
+    })
   }
 
   componentWillUnmount() {

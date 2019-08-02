@@ -54,6 +54,7 @@ class ButtonAppBar extends React.Component {
             await request.postJSON('/logout', {})
             this.setState({ isLoggedIn: false })
             localStorage.setItem('MC_NOTE_APP_LOGIN', '')
+            EventBus.emit('logout')
         } catch (e) {
             console.log(e)
         }
@@ -89,7 +90,6 @@ class ButtonAppBar extends React.Component {
                     <Route path="/" exact component={Drag} />
                     <Route path="/signin/" component={SignIn} />
                     <Route path="/signup/" component={SignUp} />
-                    <Route path="/drag/" component={Drag} />
                 </Router>
             </div>
         )
