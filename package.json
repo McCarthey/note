@@ -2,7 +2,7 @@
   "name": "my-note-app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://myusername.github.io/note",
+  "homepage": "http://mccarthey.top/note/",
   "dependencies": {
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.2",
@@ -43,8 +43,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "prerender-spa-plugin": "^3.4.0"
   }
 }
