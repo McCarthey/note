@@ -3746,14 +3746,16 @@ eslint-scope@^4.0.0, eslint-scope@^4.0.3:
     estraverse "^4.1.1"
 
 eslint-utils@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/eslint-utils/-/eslint-utils-1.3.1.tgz#9a851ba89ee7c460346f97cf8939c7298827e512"
-  integrity sha512-Z7YjnIldX+2XMcjr7ZkgEsOj/bREONV60qYeB/bjMAqqqZ4zxKyWX+BOUkdmRmA9riiIPVvo5x86m5elviOk0Q==
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/eslint-utils/-/eslint-utils-1.4.2.tgz#166a5180ef6ab7eb462f162fd0e6f2463d7309ab"
+  integrity sha512-eAZS2sEUMlIeCjBeubdj45dmBHQwPHWyBcT1VSYB7o9x9WRRqKxyUoiXlRjyAwzN7YEzHJlYg0NmzDRWx6GP4Q==
+  dependencies:
+    eslint-visitor-keys "^1.0.0"
 
 eslint-visitor-keys@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#3f3180fb2e291017716acb4c9d6d5b5c34a6a81d"
-  integrity sha512-qzm/XxIbxm/FHyH341ZrbnMUpe+5Bocte9xkmFMzPMjRaZMcXww+MpBptFvtU+79L362nqiLhekCxCxDPaUMBQ==
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.1.0.tgz#e2a82cea84ff246ad6fb57f9bde5b46621459ec2"
+  integrity sha512-8y9YjtM1JBJU/A9Kc+SbaOV4y29sSWckBwMHa+FGtVj5gN/sbnKDf6xJUl+8g7FAij9LVaP8C24DUiH/f/2Z9A==
 
 eslint@^5.16.0:
   version "5.16.0"
@@ -4712,11 +4714,6 @@ hsla-regex@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/hsla-regex/-/hsla-regex-1.0.0.tgz#c1ce7a3168c8c6614033a4b5f7877f3b225f9c38"
   integrity sha1-wc56MWjIxmFAM6S194d/OyJfnDg=
-
-htm@^2.1.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/htm/-/htm-2.2.1.tgz#02ae7459901b3956aeaf6c7ae627fb6905dc7607"
-  integrity sha512-nPWqBlSbdSHaT2d/cpFRpZLqH5BcdaRcXaicyAtXbkIsIiXLnstPPg0fEX3I8SrlY16FSzb1FLK44uk25xhMvw==
 
 html-comment-regex@^1.1.0:
   version "1.1.2"
@@ -6914,34 +6911,6 @@ obuf@^1.0.0, obuf@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
-
-omi-wc-demo@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/omi-wc-demo/-/omi-wc-demo-1.0.1.tgz#ca898ceaa8f651b228f8604308d35e51d8349754"
-  integrity sha512-lfSsEN5a4xviRDuFLH84xEl1+4npt3R1vEpEJGAEvq4yXv7vcv1qewjc/r83V27VHgRZ7t0EhvThA27uJK32rQ==
-  dependencies:
-    omi latest
-    omim "^0.1.17"
-    omio latest
-
-omi@^6.6.8, omi@^6.9.0, omi@latest:
-  version "6.9.0"
-  resolved "https://registry.yarnpkg.com/omi/-/omi-6.9.0.tgz#ae2ee794aef119ccba47096986d14d7e61e25ec9"
-  integrity sha512-XMEMNzMDzWHyRNWJ5YHJWHl4xTWgoeh0Lc/N5eVxLxWntv8314DYi3RuQf4I+fJlTf2CnDu8mljrN3i+vMTltQ==
-
-omim@^0.1.17:
-  version "0.1.17"
-  resolved "https://registry.yarnpkg.com/omim/-/omim-0.1.17.tgz#67ee3c7bb7d71fb3b4634dc0fd4e52e846aa10d6"
-  integrity sha512-KmHgfX10S1b5Gl3lSN+onibhEJjBfzirLAXhSpB6SccGCrxzJXimBnlZ5q17Hau7ZzPoq44gmz0GwpKt54I7Pw==
-  dependencies:
-    omi "^6.6.8"
-
-omio@latest:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/omio/-/omio-2.3.0.tgz#0d39fcbbf132894f45d722b888f5f5ef967fedb3"
-  integrity sha512-Orp2/f7+q2DNpw8qvCdzx2YgD72vfJMFd2FMYztutEfiopf/rDFipBTStDokknNcySBybhx3UZ22AtVhypgt3g==
-  dependencies:
-    htm "^2.1.1"
 
 on-finished@~2.3.0:
   version "2.3.0"
