@@ -7,6 +7,8 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import CheckIcon from '@material-ui/icons/Check'
+import CheckBoxIcon from '@material-ui/icons/CheckBox'
+import CheckBoxOutlineIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import Message from './Message'
@@ -305,7 +307,9 @@ export default class Drag extends React.Component {
               )}
             >
               <div>
-                <IconButton onClick={this.handleToggle(item, index)} variant="contained" size="small" color={item.done ? 'secondary' : 'default'} style={{ float: 'left' }}><CheckIcon /></IconButton>
+                <IconButton onClick={this.handleToggle(item, index)} variant="contained" size="small" color={item.done ? 'secondary' : 'default'} style={{ float: 'left' }}>
+                  {item.done ? <CheckBoxIcon /> : <CheckBoxOutlineIcon />}
+                </IconButton>
                 <div className="text-multiline" style={item.done ? { textDecoration: 'line-through', color: '#ccc' } : {}} onClick={this.handleEdit(item, index)}><pre>{item.content ? item.content : <span style={{ color: '#ccc' }}>点击编辑</span>}</pre></div>
               </div>
             </div>
