@@ -50,7 +50,8 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 
 const getListStyle = (isDraggingOver, isDragging) => ({
   boxSizing: 'border-box',
-  maxHeight: isDragging ? 'calc(100vh - 64px - 64px)' : 'calc(100vh - 64px)',
+  // maxHeight: isDragging ? 'calc(100vh - 64px - 64px)' : 'calc(100vh - 64px)',
+  maxHeight: 'calc(100vh - 64px - 64px)',
   overflow: 'hidden auto',
   background: isDraggingOver ? "#e1f5fe" : "#fff",
   border: '1px solid #ddd',
