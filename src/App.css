@@ -114,13 +114,13 @@
 }
 
 /* 滚动条样式 */
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
     width: 8px;
 }
 ::-webkit-scrollbar-thumb {
     background-color: #c1c1c1;
     border-radius: 4px;
-}
+} */
 
 /* 悬浮按钮样式 */
 .btn-feb {

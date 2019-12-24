@@ -31,7 +31,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "proxy": "http://118.24.146.34:8770",
+  "proxy": "https://catdogs.club/noteapi",
   "browserslist": {
     "production": [
       ">0.2%",
