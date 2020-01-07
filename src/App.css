@@ -62,6 +62,7 @@
     margin: 0;
     line-height: 40px;
     white-space: pre-line;
+    word-break: break-all;
 }
 
 /* 骨架屏样式 */
