@@ -11,7 +11,7 @@ const morgan = require('morgan')
 const MongoStore = require('connect-mongo')(session);
 const crypto = require('crypto')
 
-const config = require('./config') // 这个可不敢push上来
+const config = require('./config')
 
 /**
  * 连接mongodb，将数据库对象存放在全局变量db中
@@ -31,7 +31,7 @@ const server = app.listen(port, () => {
 
 
 const allowCrossDomain = function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', 'http://mccarthey.top');
+    res.header('Access-Control-Allow-Origin', 'https://mccarthey.top');
     res.header('Access-Control-Allow-Headers', 'content-type');
     res.header('Access-Control-Allow-Credentials', 'true');
     next();
@@ -39,24 +39,32 @@ const allowCrossDomain = function (req, res, next) {
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
 
+// 当使用 nginx + https 时，需要必要的配置 参考 https://github.com/expressjs/session/issues/374 
+app.set('trust proxy', 1)
 app.use(allowCrossDomain) //运用跨域的中间件
 // app.use(compression({level: 9})) // 运用gzip压缩中间件。如果使用了nginx的gzip压缩，则无需使用该中间件了
 app.use(morgan('combined', { stream: accessLogStream }))
-app.use(cookieParser()) // use cookie-parser
+app.use(cookieParser())
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use(session({
     secret: 'random key',
+    proxy: true,
     name: 'note_app_sid',
     resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 },
+    saveUninitialized: false,
+    cookie: {
+        sameSite: 'none',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        secure: true
+    },
     store: new MongoStore({ url: `${config.dbUrl}/session` })
-
 })) // using session
 
 // 检查是否已经登录过
 app.get('/checkLogin', (req, res) => {
+    console.log('[!!!checkLogin]', req.session)
     const isLogin = checkLoginStatus(req, res)
     if (isLogin) {
         res.send({
@@ -107,11 +115,16 @@ app.post('/login', async (req, res) => {
         const dbResult = await db.collection('users').findOne({
             username: data.username,
         })
-        // console.log(dbResult.username)
         const { username, password, uid } = dbResult
         if (password === pwdMd5) {
-            req.session.login = 'Logged'
-            res.cookie('uid', uid, { maxAge: 7 * 24 * 60 * 60 * 1000 })
+            req.session.isLoggedIn = true
+            console.log('[login req.session]', req.session)
+            res.cookie('uid', uid, {
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+                httpOnly: true,
+                secure: true,
+                sameSite: 'None'
+            })
             res.send({
                 code: 0,
                 msg: 'Login successfully'
@@ -135,7 +148,11 @@ app.post('/logout', async (req, res) => {
             })
             return
         }
-        res.clearCookie('uid')
+        res.clearCookie('uid', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'None'
+        })
         res.send({
             code: 0,
             msg: 'Log out successfully'
@@ -146,6 +163,7 @@ app.post('/logout', async (req, res) => {
 // 获取用户数据
 app.get('/getNotes', async (req, res) => {
     const isLogin = checkLoginStatus(req, res)
+    console.log('[getNode req]', req.session)
     if (!isLogin) return false
     if (isLogin) {
         try {
@@ -160,6 +178,7 @@ app.get('/getNotes', async (req, res) => {
                 data: notes
             })
         } catch (e) {
+            console.log('[get data failed]', e)
             res.send({
                 code: 201,
                 msg: 'Get data failed'
@@ -177,12 +196,7 @@ app.post('/create', async (req, res) => {
         const dbResult = await db.collection('users').updateOne(
             { uid },
             {
-                $push: {
-                    notes: {
-                        $each: [{ id, content, done }],
-                        $position: 0
-                    }
-                },
+                $push: { notes: { $each: [{ id, content, done }], $position: 0 } },
             }
         )
         res.send({
@@ -312,12 +326,13 @@ function generateId(data) {
 
 // 检查登录状态
 function checkLoginStatus(req, res) {
-    if (req.session.login) {
+    console.log('[id]', req.session)
+    if (req.session.isLoggedIn) {
         return true
     }
     res.send({
         code: 999,
-        msg: 'Please log in first'
+        msg: 'Please log in first!'
     })
     return false
 }
